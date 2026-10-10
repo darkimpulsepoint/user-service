@@ -1,0 +1,81 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-create-payment-cards-table
+      author: user-service
+      changes:
+        - createTable:
+            tableName: payment_cards
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_payment_cards
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: number
+                  type: VARCHAR(19)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: holder
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expiration_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: active
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+        # Один пользователь -> много карт
+        - addForeignKeyConstraint:
+            baseTableName: payment_cards
+            baseColumnNames: user_id
+            constraintName: fk_payment_cards_user
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        - addUniqueConstraint:
+            tableName: payment_cards
+            columnNames: number
+            constraintName: uq_payment_cards_number
+
+        - createIndex:
+            tableName: payment_cards
+            indexName: idx_payment_cards_user_id_active
+            columns:
+              - column:
+                  name: user_id
+              - column:
+                  name: active
+
+        - createIndex:
+            tableName: payment_cards
+            indexName: idx_payment_cards_expiration_date
+            columns:
+              - column:
+                  name: expiration_date
