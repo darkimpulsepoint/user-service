@@ -1,15 +1,13 @@
 spring:
   application:
     name: user-service
-
   config:
     import: optional:file:.env[.properties]
-
+  profiles:
+    default: local
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:user_service}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
-
   jpa:
     open-in-view: false
     hibernate:
@@ -18,9 +16,7 @@ spring:
       hibernate:
         jdbc:
           time_zone: UTC
-
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
-
 server:
   port: ${SERVER_PORT:8080}
