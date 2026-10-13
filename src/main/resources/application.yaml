@@ -22,5 +22,10 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
 
+  data:
+    web:
+      pageable:
+        max-page-size: 100
+
 server:
   port: ${SERVER_PORT:8080}
