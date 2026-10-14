@@ -29,7 +29,7 @@ public record UserDto(
         @Size(max = 255, message = "email must be at most 255 characters")
         String email,
 
-        boolean active,
+        Boolean active,
         Instant createdAt,
         Instant updatedAt) {
 }
