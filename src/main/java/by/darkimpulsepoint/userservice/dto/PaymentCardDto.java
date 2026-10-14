@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
 
@@ -27,5 +28,5 @@ public record PaymentCardDto(
 
         Boolean active,
         Instant createdAt,
-        Instant updatedAt) {
+        Instant updatedAt) implements Serializable {
 }

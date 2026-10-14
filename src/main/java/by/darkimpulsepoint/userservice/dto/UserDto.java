@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
 
@@ -31,5 +32,5 @@ public record UserDto(
 
         Boolean active,
         Instant createdAt,
-        Instant updatedAt) {
+        Instant updatedAt) implements Serializable {
 }
