@@ -11,6 +11,8 @@ import by.darkimpulsepoint.userservice.repository.PaymentCardRepository;
 import by.darkimpulsepoint.userservice.repository.UserRepository;
 import by.darkimpulsepoint.userservice.specification.CardSpecifications;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Instant;
 import java.util.List;
 
+import static by.darkimpulsepoint.userservice.config.CacheConfig.USER_WITH_CARDS;
+
 @Service
 @RequiredArgsConstructor
 public class PaymentCardService {
@@ -26,6 +30,7 @@ public class PaymentCardService {
     private final PaymentCardRepository cardRepository;
     private final UserRepository userRepository;
     private final PaymentCardMapper cardMapper;
+    private final CacheManager cacheManager;
 
     @Transactional
     public PaymentCardDto create(Long userId, PaymentCardDto dto) {
@@ -41,7 +46,9 @@ public class PaymentCardService {
 
         PaymentCard card = cardMapper.toEntity(dto);
         card.setUser(user);
-        return cardMapper.toDto(cardRepository.save(card));
+        PaymentCardDto saved = cardMapper.toDto(cardRepository.save(card));
+        evictUserCache(userId);
+        return saved;
     }
 
     @Transactional(readOnly = true)
@@ -73,7 +80,9 @@ public class PaymentCardService {
             throw new DuplicateEntityException("Card with number " + dto.number() + " already exists");
         }
         cardMapper.updateEntity(dto, card);
-        return cardMapper.toDto(cardRepository.saveAndFlush(card));
+        PaymentCardDto updated = cardMapper.toDto(cardRepository.saveAndFlush(card));
+        evictUserCache(updated.userId());
+        return updated;
     }
 
     @Transactional
@@ -88,12 +97,24 @@ public class PaymentCardService {
 
     @Transactional
     public void delete(Long id) {
-        cardRepository.delete(findCard(id));
+        PaymentCard card = findCard(id);
+        Long userId = card.getUser().getId();
+        cardRepository.delete(card);
+        evictUserCache(userId);
     }
 
     private void setActive(Long id, boolean active) {
+        Long userId = findCard(id).getUser().getId();
         if (cardRepository.updateActive(id, active, Instant.now()) == 0) {
             throw notFound(id);
+        }
+        evictUserCache(userId);
+    }
+
+    private void evictUserCache(Long userId) {
+        Cache cache = cacheManager.getCache(USER_WITH_CARDS);
+        if (cache != null) {
+            cache.evict(userId);
         }
     }
 
