@@ -2,6 +2,7 @@ package by.darkimpulsepoint.userservice.controller;
 
 import by.darkimpulsepoint.userservice.dto.PageResponse;
 import by.darkimpulsepoint.userservice.dto.UserDto;
+import by.darkimpulsepoint.userservice.dto.UserWithCardsDto;
 import by.darkimpulsepoint.userservice.exception.InvalidRequestException;
 import by.darkimpulsepoint.userservice.service.UserService;
 import jakarta.validation.Valid;
@@ -43,6 +44,11 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(userService.getById(id));
+    }
+
+    @GetMapping("/{id}/with-cards")
+    public ResponseEntity<UserWithCardsDto> getByIdWithCards(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(userService.getByIdWithCards(id));
     }
 
     @GetMapping
