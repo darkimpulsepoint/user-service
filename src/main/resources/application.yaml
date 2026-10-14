@@ -26,6 +26,17 @@ spring:
     web:
       pageable:
         max-page-size: 100
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+  cache:
+    type: redis
+    redis:
+      time-to-live: ${CACHE_TTL:10m}
+      key-prefix: "user-service::"
+      use-key-prefix: true
+      cache-null-values: false
 
 server:
   port: ${SERVER_PORT:8080}
