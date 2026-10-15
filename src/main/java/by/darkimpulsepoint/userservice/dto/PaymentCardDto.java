@@ -25,7 +25,7 @@ public record PaymentCardDto(
         @Future(message = "expirationDate must be in the future")
         LocalDate expirationDate,
 
-        boolean active,
+        Boolean active,
         Instant createdAt,
         Instant updatedAt) {
 }
