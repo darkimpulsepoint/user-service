@@ -1,15 +1,13 @@
 spring:
   application:
     name: user-service
-
   config:
     import: optional:file:.env[.properties]
-
+  profiles:
+    default: local
   datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:user_service}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
-
   jpa:
     open-in-view: false
     hibernate:
@@ -18,18 +16,12 @@ spring:
       hibernate:
         jdbc:
           time_zone: UTC
-
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
-
   data:
     web:
       pageable:
         max-page-size: 100
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
-
   cache:
     type: redis
     redis:
@@ -37,6 +29,5 @@ spring:
       key-prefix: "user-service::"
       use-key-prefix: true
       cache-null-values: false
-
 server:
   port: ${SERVER_PORT:8080}
