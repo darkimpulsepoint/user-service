@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
@@ -23,6 +24,7 @@ public interface PaymentCardRepository
     @Query(value = "SELECT COUNT(*) FROM payment_cards WHERE user_id = :userId", nativeQuery = true)
     long countCardsByUserId(@Param("userId") Long userId);
 
+    @Transactional
     @Modifying(clearAutomatically = true)
     @Query("update PaymentCard c set c.active = :active, c.updatedAt = :now where c.id = :id")
     int updateActive(@Param("id") Long id, @Param("active") boolean active, @Param("now") Instant now);
