@@ -38,6 +38,7 @@ services:
       DB_USERNAME: ${DB_USERNAME:-postgres}
       DB_PASSWORD: ${DB_PASSWORD:-postgres}
       DB_NAME: ${DB_NAME:-user_service}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set and shared with auth-service}
     ports:
       - "${SERVER_PORT:-8080}:8080"
 

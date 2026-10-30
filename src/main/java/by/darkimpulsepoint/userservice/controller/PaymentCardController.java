@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,6 +32,7 @@ public class PaymentCardController {
 
     private final PaymentCardService cardService;
 
+    @PreAuthorize("hasRole('ADMIN') or @access.isOwner(#userId)")
     @PostMapping("/users/{userId}/cards")
     public ResponseEntity<PaymentCardDto> create(@PathVariable("userId") Long userId,
                                                  @Valid @RequestBody PaymentCardDto dto) {
@@ -46,16 +48,19 @@ public class PaymentCardController {
         return ResponseEntity.created(location).body(created);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @access.isOwner(#userId)")
     @GetMapping("/users/{userId}/cards")
     public ResponseEntity<List<PaymentCardDto>> getAllByUserId(@PathVariable("userId") Long userId) {
         return ResponseEntity.ok(cardService.getAllByUserId(userId));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @access.ownsCard(#id)")
     @GetMapping("/cards/{id}")
     public ResponseEntity<PaymentCardDto> getById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(cardService.getById(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/cards")
     public ResponseEntity<PageResponse<PaymentCardDto>> getAll(
             @RequestParam(name = "name", required = false) String name,
@@ -64,6 +69,7 @@ public class PaymentCardController {
         return ResponseEntity.ok(PageResponse.from(cardService.getAll(name, surname, pageable)));
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @access.ownsCard(#id)")
     @PutMapping("/cards/{id}")
     public ResponseEntity<PaymentCardDto> update(@PathVariable("id") Long id,
                                                  @Valid @RequestBody PaymentCardDto dto) {
@@ -73,18 +79,21 @@ public class PaymentCardController {
         return ResponseEntity.ok(cardService.update(id, dto));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/cards/{id}/activate")
     public ResponseEntity<Void> activate(@PathVariable("id") Long id) {
         cardService.activate(id);
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/cards/{id}/deactivate")
     public ResponseEntity<Void> deactivate(@PathVariable("id") Long id) {
         cardService.deactivate(id);
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasRole('ADMIN') or @access.ownsCard(#id)")
     @DeleteMapping("/cards/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         cardService.delete(id);
