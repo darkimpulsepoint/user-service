@@ -18,6 +18,8 @@ public interface PaymentCardRepository
 
     boolean existsByNumberAndIdNot(String number, Long id);
 
+    boolean existsByIdAndUserId(Long id, Long userId);
+
     @Query("select c from PaymentCard c where c.user.id = :userId order by c.id")
     List<PaymentCard> findCardsByUserId(@Param("userId") Long userId);
 
